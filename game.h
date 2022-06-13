@@ -20,7 +20,6 @@
 
 #include <Fonts/FreeSans9pt7b.h>
 
-#include "colors.h"
 #include "bird.h"
 
 const int birdHeight = 24;
@@ -28,10 +27,12 @@ const int birdWidth =  32;
 
 const int birdX = 30;
 
-const int pipeGap = birdHeight+10;
-
-int pipeX;
+const int pipeGap = birdHeight+30;
+const int pipeWidth = 30;
+int topPipeHeight = 60;
+int pipeX = 170;
 int topPipeY;
+int bottomPipeY;
 
 
 
@@ -44,7 +45,19 @@ int birdMenuDirection = -1;
 
 
 
+void drawPipes(int x){
+  tft.fillRect(x, 0, pipeWidth, topPipeHeight, GREEN);
+  tft.fillRect(x, bottomPipeY, pipeWidth, 128, GREEN);
+  tft.drawFastVLine(x+pipeWidth+1, 0, topPipeHeight, CYAN);
+  tft.drawFastVLine(x+pipeWidth+1, bottomPipeY, 128, CYAN);
+  
+}
+
+
 void setup_game(){
+  randomSeed(analogRead(A5));
+  topPipeHeight = random(10,60);
+  bottomPipeY = topPipeHeight + pipeGap;
   
 }
 
@@ -61,6 +74,7 @@ void game_over(){
   tft.fillScreen(BLACK);
   inMenu=true;
   birdY = 50;
+  pipeX = 170;
 }
 
 void draw_menu(){
@@ -111,11 +125,24 @@ void update_game(){
   else{
     oldY = birdY;
     birdY = birdY + 2;
-    if (birdY+birdHeight >= 128){
+    if (birdY+birdHeight >= 128 or birdY <= 0){
       game_over();
     }
-    else if (birdY <= 0){
-     game_over();
+    else if (birdY+birdHeight >= bottomPipeY or birdY <= topPipeY+topPipeHeight){
+      if (birdX+birdWidth >= pipeX and birdX <= pipeX+pipeWidth){
+        game_over();
+      }
+    }
+    if (pipeX+pipeWidth == 0){
+      randomSeed(analogRead(5));
+      topPipeHeight = random(10,60);
+      bottomPipeY = topPipeHeight + pipeGap;
+      pipeX = 170;
+      
+    }
+    else{
+      pipeX--;
+      
     }
     
     if (joystick->isPress()){
@@ -131,6 +158,7 @@ void draw_game(){
     }
   else{
     draw_bird(birdY, oldY);
+    drawPipes(pipeX);
   }
   
 }

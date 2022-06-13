@@ -37,10 +37,6 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_PIN_CS, TFT_PIN_DC, TFT_PIN_RST);
 
 Joystick* joystick;
 
-enum Move {
-    PRESS, UP, DOWN, RIGHT, LEFT, NOT
-};
-
 #include "colors.h"
 #include "game.h"
 #include "mokoto_glitch.h"
@@ -124,8 +120,8 @@ void setup() {
 
   tft.initR(INITR_BLACKTAB);
   tft.setRotation(1);
-  //intro();
-  //setup_game();
+  intro();
+  setup_game(); //Commented out because unused here.
   display_game_logo();
 
 }
